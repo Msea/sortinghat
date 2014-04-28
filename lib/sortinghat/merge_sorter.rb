@@ -5,54 +5,69 @@ module SortingHat
 
     module MergeSorter
 
-      def merge_sort(arr = @original)
-        return @sorted if @sorted
-        
-        case arr.size
-        when 1
-          arr
-        when 2
-          arr[0] < arr[1] ? arr : arr.reverse!
-        else
-          first_half = merge_sort(arr[0...(arr.size/2)])
-          second_half = merge_sort(arr[(arr.size/2)..-1])
-          
-          to_return = []
-          cur_objs = [first_half.shift, second_half.shift]
-          
-          until first_half.empty? || second_half.empty?
-            if cur_objs[0] < cur_objs[1]
-              to_return << cur_objs[0]
-              cur_objs[0] = first_half.shift
-            else
-              to_return << cur_objs[1]
-              cur_objs[1] = second_half.shift
-            end
-          end
-          
-          if first_half.empty?
-            while !second_half.empty? && cur_objs[1] < cur_objs[0]
-              to_return << cur_objs[1]
-              cur_objs[1] = second_half.shift
-            end
-            to_return += cur_objs.sort
-            to_return += second_half
-          else
-            while !first_half.empty? && cur_objs[0] < cur_objs[1]
-              to_return << cur_objs[0]
-              cur_objs[0] = first_half.shift
-            end
-            to_return += cur_objs.sort
-            to_return += first_half
-          end
+      @original = ((1..10_000).to_a.shuffle)
 
-          @sorted = to_return if arr.object_id == @original.object_id
-          to_return
+      def merge_sort(start = 0, endpoint = @original.size - 1)
+        
+        range = endpoint - start
+        
+        return @other_arr[start] = @original[start] if range == 0
+
+        @other_arr ||= Array.new(@original.size)
+
+        midpoint = start + range/2 + 1
+        
+        merge_sort(start, midpoint - 1)
+        merge_sort(midpoint, endpoint)
+
+        counter1, counter2 = start, midpoint
+
+
+        (start..endpoint).each do |position|
+          if counter1 < midpoint &&
+            (counter2 > endpoint || @other_arr[counter1] <= @other_arr[counter2])
+            
+
+            @original[position] = @other_arr[counter1]
+            counter1 += 1
+          else
+            @original[position] = @other_arr[counter2]
+            counter2 += 1
+          end
         end
+
+        @other_arr[start..endpoint] = @original[start..endpoint]
       end
 
     end
 
   end
 
+  class PseudoArray
+
+    def initialize(arr, start = 0, stop = arr.size - 1)
+      @arr = arr
+      @start = start
+      @stop = stop
+    end
+
+    def [](index)
+      return if index + @start > @stop
+      if index < 1
+        arr[@stop + index + 1]
+      else
+        arr[index + @start]
+      end
+    end
+
+    def []=(index, value)
+      return if index + @start > @stop
+      if index < 1
+        arr[@stop + index + 1] = value
+      else
+        arr[index + @start] = value
+      end
+    end
+
+  end
 end

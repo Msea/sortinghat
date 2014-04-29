@@ -8,19 +8,16 @@ module SortingHat
 
       def build_heap
         last_parent = (@original.length)/2
-        @heap = Heap.new
+        @heap = Heap.new(@original)
         (last_parent.downto(0)).each do |i|
           heapify(i)
         end
-
       end
 
       def heapify(current_index)
         largest = @heap.index_of_largest(current_index)
         if !(largest  == current_index)
           @heap.swap_values(current_index, largest)
-          heapify(@heap, largest)
-          something.swap_values(current_index, largest)
           heapify(largest)
         end
       end
@@ -32,7 +29,7 @@ module SortingHat
         private :tree_array=
 
         def initialize(tree)
-          @tree_array = tree
+          @tree_array = tree.dup
         end
 
         def length

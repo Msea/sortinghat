@@ -2,13 +2,22 @@ module SortingHat
   class Sorter
     module HeapSorter
       def heap_sort
+        @sorted = []
+        build_heap
+
+        ((@original.length-1).downto(0)).each do |i|
+          @heap.swap_values(0, i)
+          @sorted.unshift(@heap.pop) #refactor this
+          heapify(0)
+        end
+
       end
 
-      # private
+      #private
 
       def build_heap
-        last_parent = (@original.length)/2
         @heap = Heap.new(@original)
+        last_parent = @heap.last_parent
         (last_parent.downto(0)).each do |i|
           heapify(i)
         end
@@ -33,10 +42,15 @@ module SortingHat
         end
 
         def length
-          @tree_array.length
+          tree_array.length
         end
 
-        def last_with_children
+        def last_parent
+          length/2
+        end
+
+        def pop
+          tree_array.pop
         end
 
         def value_at(i)
@@ -51,6 +65,7 @@ module SortingHat
         def index_of_right(i)
           (i+1)*2
         end
+
         def value_of_left(i)
           index = index_of_left(i)
           value_at(index)
@@ -96,20 +111,3 @@ module SortingHat
     end
   end
 end
-
-
-# Note: LEFT() and RIGHT() can be efficiently computed using bitwise shift and set operations.
-#   class Sorter
-#      def heap_sort(x)
-#       g = Heap.new
-#       g.k(x)
-#       end
-
-#       private
-#       class Heap
-#         def k(x)
-#           x+1
-#         end  
-#       end
-
-# end

@@ -11,9 +11,8 @@ module SortingHat
         
         range = endpoint - start
         
-        return @other_arr[start] = @original[start] if range == 0
-
         @other_arr ||= Array.new(@original.size)
+        return [@other_arr[start] = @original[start]].compact if range <= 0
 
         midpoint = start + range/2 + 1
         
@@ -24,14 +23,16 @@ module SortingHat
 
 
         (start..endpoint).each do |position|
+          first_op = @other_arr[counter1]
+          second_op = @other_arr[counter2]
           if counter1 < midpoint &&
-            (counter2 > endpoint || @other_arr[counter1] <= @other_arr[counter2])
+            (counter2 > endpoint || first_op <= second_op)
             
 
-            @original[position] = @other_arr[counter1]
+            @original[position] = first_op
             counter1 += 1
           else
-            @original[position] = @other_arr[counter2]
+            @original[position] = second_op
             counter2 += 1
           end
         end
